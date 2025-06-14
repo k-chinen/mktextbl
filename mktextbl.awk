@@ -47,19 +47,30 @@ func formconv(s) {
     if(flag["doublebox"]!="")
         t = t "||";
     
+    k = 0;
     for(i = 1; i <= length(s); i++ ) {
-        fchar = substr(s,i,1);
-        if( match(fchar,/[lrcsbi|]/) ) {
+#       fchar = substr(s,i,1);
+        fchar = tolower(substr(s,i,1));
+        # acceptable format
+        if( match(fchar,/[lrcsbi_=|]/) ) {
             t = t fchar;
             if(substr(s,i+1,1)!="s" && flag["allbox"]!="") {
             }
-            if(match(substr(s,i+1,1), /[lrc]/) && flag["allbox"]!="") {
+            if(match(substr(s,i+1,1), /[lrc_=]/) && flag["allbox"]!="") {
                 t = t "|";
             }
             j++;
         }
+        if( match(fchar,/[lrcs_=]/) ) {
+            k++;
+        }
+        if(k>maxcolumn) {
+            maxcolumn = k;
+        }
     }
     
+    if(flag["allbox"]!="")
+        t = t "|";
     if(flag["box"]!="")
         t = t "|";
     if(flag["doublebox"]!="")
@@ -90,10 +101,12 @@ func fullconv(s) {
 }
 
 BEGIN{
+    STDERR = "/dev/stderr"
     FS ="[\t]"
     intbl = 0;
     hasform = 0;
     hasstyle = 0;
+    maxcolumn = -1;
     sline = -1;     # start line
     tline = -1;     # table line
     for(i=1;i<ARGC;i++) {
@@ -112,7 +125,7 @@ BEGIN{
             }
         }
     }
-    if(flag["independ"]!="") {
+    if(gflag["independ"]!="") {
         print "\\documentstyle[a4j]{jarticle}"
         print "\\begin{document}"
     }
@@ -122,12 +135,12 @@ BEGIN{
 }
 END{
     if(intbl) {
-        print "Warning: No '.TE'" > "/dev/stderr"
+        print "Warning: No '.TE'" > STDERR
     }
     if(flag["centering"]!="") {
         print "\\end{center}"
     }
-    if(flag["independ"]!="") {
+    if(gflag["independ"]!="") {
         print "\\end{document}"
     }
 }
@@ -168,7 +181,6 @@ END{
 /\.$/{
     if(intbl && !hasform ){
         gsub(/\ /,"",$0);
-        # printf "%% format ----- %s\n",$0
         form = formconv($0)
         defaultform = form
         
@@ -222,6 +234,7 @@ END{
     tline = -1;
     hasform = 0;
     hasstyle = 0;
+    maxcolumn = -1;
 
     for(i in pform) {
         delete pform[i]
@@ -234,8 +247,6 @@ END{
     next;
 }
 (intbl&&(tline==-1)){
-#print ";;"
-    # printf "%% format %d?: %s\n",NR-sline,$0
     pform[NR-sline] = formconv($0)
     next;
 }
@@ -281,6 +292,8 @@ END{
             thisform = defaultform
         }
 
+        auxline = ""
+
         # skip empty row or horizontal line row
         act = 0;
         for(i=1;i<=length(thisform);i++) {
@@ -293,60 +306,83 @@ END{
                 act = 1;
             }
         }
-#       print "% act? ",act
 
         if(act) {
-#           printf "% pform[%d]: %s\n",NR-tline,pform[NR-tline] > "/dev/stderr"
             k = 1;
-            for(i=1;i<=length(thisform);i++) {
+            i = 1;
+            while(k<=maxcolumn && i<=length(thisform)) {
+                w = 1               
                 form = ""
+                cont = $k
+
                 while(substr(thisform,i,1)=="|") {
                     form = form "|"
                     i ++;
                 }
 
-                form = form substr(thisform,i,1)
+                mcmd = substr(thisform,i,1)
+                if(mcmd == "_" || mcmd == "=") {
+                    form = form "l" # dummy
+                }
+                else {
+                    form = form mcmd 
+                }
+
+
+                j = i+1;
 
                 face = ""
-                if(substr(thisform,i+1,1)=="b") {
+                if(substr(thisform,j,1)=="b") {
 #                   face = "\\sf "
                     face = "\\bf "
-                    i++;
+                    j++;
                 }
                 else
-                if(substr(thisform,i+1,1)=="i") {
+                if(substr(thisform,j,1)=="i") {
                     face = "\\it "
-                    i++;
+                    j++;
                 }
                 else {
                 }
                 
-                j = i;
-                while(substr(thisform,j+1,1)=="s")
+                while(substr(thisform,j,1)=="s") {
+                    w++;
                     j++;
-                while(substr(thisform,j+1,1)=="|") {
+                }
+                while(substr(thisform,j,1)=="|") {
                     form = form "|"
                     j ++;
-                    i ++;
                 }
                 
                 if(pform[NR-tline]!="") {
-                    printf "\\multicolumn{%d}{%s}{%s%s} ",j-i+1,form,face,$k
+                    if(mcmd == "_" || mcmd == "=") {
+#                       cont = "";
+                        auxline = auxline "\\cline{" k "-" k "}";
+                    }
+                    printf "\\multicolumn{%d}{%s}{%s%s} ",w,form,face,cont
                 }
                 else {
-                    if($k ~ /^\\_/) {
+                    if(cont ~ /^\\_/) {
                         printf "\\null "
                     }
                     else {
-                        printf "%s%s ",face,$k
+                        printf "%s%s ", face, cont
                     }
                 }
                 i = j
-                if(i<length(thisform))
+#                if(i<length(thisform))
+#                    printf "& "
+                if(w>1) {
+                    k += w-1;
+                }
+                if(k<maxcolumn) {
                     printf "& "
+                }
+
                 k ++;
+
             }
-            printf "\\\\ "
+            printf "\\\\ \n"
 
         }
         else {
@@ -362,6 +398,10 @@ END{
             hasstyle = 1;
             hasform = 1;
         }
+    }
+
+    if(auxline != "") {
+        print auxline;
     }
     
     if(flag["allbox"])
