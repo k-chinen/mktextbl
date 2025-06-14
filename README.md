@@ -40,8 +40,11 @@ Do not expect any translation from roff commands to LaTeX commands.
 
 ## history
 
-In 1992, This program was producuted for integration **tbl** to TeX.
-Because TeX's tabular env. was complex than **tbl**.
+- In 1992, This program was producuted for integration **tbl** to TeX.
+  Because TeX's tabular env. was complex than **tbl**.
+- 2025-06-14:
+	+ Fix right vertical line in "allbox" style.
+	+ Insert newline per line.
 
 ## references
 
