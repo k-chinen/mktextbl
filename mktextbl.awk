@@ -52,10 +52,10 @@ func formconv(s) {
         if( match(fchar,/[lrcsbi|]/) ) {
             t = t fchar;
             if(substr(s,i+1,1)!="s" && flag["allbox"]!="") {
-			}
+            }
             if(match(substr(s,i+1,1), /[lrc]/) && flag["allbox"]!="") {
                 t = t "|";
-			}
+            }
             j++;
         }
     }
@@ -70,23 +70,23 @@ func formconv(s) {
 }
 
 func fullconv(s) {
-	fc = split(s,v)
-	for(i=1;i<=fc;i++) {
-		if(v[i] ~ /^\\_/) {
-		}
-		else {
-			printf "%s ", v[i];
-		}
-		if(i!=fc) {
-			printf " & ";
-		}
-	}
-	print " \\\\"
-	for(i=1;i<=fc;i++) {
-		if(v[i] ~ /^\\_/) {
-			printf "\\cline{%d-%d}\n",i,i;
-		}
-	}
+    fc = split(s,v)
+    for(i=1;i<=fc;i++) {
+        if(v[i] ~ /^\\_/) {
+        }
+        else {
+            printf "%s ", v[i];
+        }
+        if(i!=fc) {
+            printf " & ";
+        }
+    }
+    print " \\\\"
+    for(i=1;i<=fc;i++) {
+        if(v[i] ~ /^\\_/) {
+            printf "\\cline{%d-%d}\n",i,i;
+        }
+    }
 }
 
 BEGIN{
@@ -158,9 +158,9 @@ END{
                 flag[style[i]]="on"
             }
         }
-		if(flag["nocenter"]) {
-			flag["center"] = "";
-		}
+        if(flag["nocenter"]) {
+            flag["center"] = "";
+        }
         sline = NR
         next;
     }
@@ -170,14 +170,14 @@ END{
         gsub(/\ /,"",$0);
         # printf "%% format ----- %s\n",$0
         form = formconv($0)
-		defaultform = form
+        defaultform = form
         
         if(flag["center"]!="") {
             print "\\begin{center}"
         }
-		
-		gsub("b", "", form);
-		gsub("i", "", form);
+        
+        gsub("b", "", form);
+        gsub("i", "", form);
         
         printf "\\begin{tabular}{%s}\n",form
         
@@ -229,7 +229,7 @@ END{
     for(i in flag) {
         delete flag[i]
     }
-	defaultform = ""
+    defaultform = ""
 
     next;
 }
@@ -273,95 +273,95 @@ END{
     gsub(/{/,"\\{");
     gsub(/}/,"\\}");
 
-	if(1) {
-		if(pform[NR-tline]!="") {
-			thisform = pform[NR-tline]
-		}
-		else {
-			thisform = defaultform
-		}
+    if(1) {
+        if(pform[NR-tline]!="") {
+            thisform = pform[NR-tline]
+        }
+        else {
+            thisform = defaultform
+        }
 
-		# skip empty row or horizontal line row
-		act = 0;
+        # skip empty row or horizontal line row
+        act = 0;
         for(i=1;i<=length(thisform);i++) {
-			if($i ~ /^$/) {
-			}
-			else
-			if($i ~ /^\\_/) {
-			}
-			else {
-				act = 1;
-			}
-		}
-#		print "% act? ",act
+            if($i ~ /^$/) {
+            }
+            else
+            if($i ~ /^\\_/) {
+            }
+            else {
+                act = 1;
+            }
+        }
+#       print "% act? ",act
 
-		if(act) {
-#        	printf "% pform[%d]: %s\n",NR-tline,pform[NR-tline] > "/dev/stderr"
-			k = 1;
-			for(i=1;i<=length(thisform);i++) {
-				form = ""
-				while(substr(thisform,i,1)=="|") {
-					form = form "|"
-					i ++;
-				}
+        if(act) {
+#           printf "% pform[%d]: %s\n",NR-tline,pform[NR-tline] > "/dev/stderr"
+            k = 1;
+            for(i=1;i<=length(thisform);i++) {
+                form = ""
+                while(substr(thisform,i,1)=="|") {
+                    form = form "|"
+                    i ++;
+                }
 
-				form = form substr(thisform,i,1)
+                form = form substr(thisform,i,1)
 
-				face = ""
-				if(substr(thisform,i+1,1)=="b") {
-#					face = "\\sf "
-					face = "\\bf "
-					i++;
-				}
-				else
-				if(substr(thisform,i+1,1)=="i") {
-					face = "\\it "
-					i++;
-				}
-				else {
-				}
-				
-				j = i;
-				while(substr(thisform,j+1,1)=="s")
-					j++;
-				while(substr(thisform,j+1,1)=="|") {
-					form = form "|"
-					j ++;
-					i ++;
-				}
-				
-				if(pform[NR-tline]!="") {
-					printf "\\multicolumn{%d}{%s}{%s%s} ",j-i+1,form,face,$k
-				}
-				else {
-					if($k ~ /^\\_/) {
-						printf "\\null "
-					}
-					else {
-						printf "%s%s ",face,$k
-					}
-				}
-				i = j
-				if(i<length(thisform))
-					printf "& "
-				k ++;
-			}
-			printf "\\\\ "
+                face = ""
+                if(substr(thisform,i+1,1)=="b") {
+#                   face = "\\sf "
+                    face = "\\bf "
+                    i++;
+                }
+                else
+                if(substr(thisform,i+1,1)=="i") {
+                    face = "\\it "
+                    i++;
+                }
+                else {
+                }
+                
+                j = i;
+                while(substr(thisform,j+1,1)=="s")
+                    j++;
+                while(substr(thisform,j+1,1)=="|") {
+                    form = form "|"
+                    j ++;
+                    i ++;
+                }
+                
+                if(pform[NR-tline]!="") {
+                    printf "\\multicolumn{%d}{%s}{%s%s} ",j-i+1,form,face,$k
+                }
+                else {
+                    if($k ~ /^\\_/) {
+                        printf "\\null "
+                    }
+                    else {
+                        printf "%s%s ",face,$k
+                    }
+                }
+                i = j
+                if(i<length(thisform))
+                    printf "& "
+                k ++;
+            }
+            printf "\\\\ "
 
-		}
-		else {
-			for(i=1;i<=NF;i++) {
-				if($i ~ /^\\_/) {
-					printf "\\cline{%d-%d} ",i,i;
-				}
-			}
-			print ""
-		}
+        }
+        else {
+            for(i=1;i<=NF;i++) {
+                if($i ~ /^\\_/) {
+                    printf "\\cline{%d-%d} ",i,i;
+                }
+            }
+            print ""
+        }
 
-		if(pform[NR-tline]!="") {
-			hasstyle = 1;
-			hasform = 1;
-		}
+        if(pform[NR-tline]!="") {
+            hasstyle = 1;
+            hasform = 1;
+        }
     }
     
     if(flag["allbox"])
