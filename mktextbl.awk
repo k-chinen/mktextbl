@@ -2,7 +2,7 @@
 # mktextbl.awk - Make TeX table script
 #        Convert tbl-format table to tabular-env. on LaTeX.
 #
-#   by k-chinen@is.aist-nara.ac.jp, 1992-1996, 2003-2004
+#   by k-chinen@is.aist-nara.ac.jp, 1992-1996, 2003-2004, 2025
 #
 # $Id: mktextbl.awk,v 1.2 1996/12/08 08:45:33 k-chinen Exp k-chinen $
 #
@@ -49,9 +49,24 @@ func formconv(s) {
     
     k = 0;
     for(i = 1; i <= length(s); i++ ) {
-#       fchar = substr(s,i,1);
-        fchar = tolower(substr(s,i,1));
         # acceptable format
+
+        # get separation space
+        _left = substr(s,i)
+        if( match(_left, /^[\.0-9]+/) ) {
+            # conver roff's en -> TeX's em 0.5 times
+            ennum = substr(_left, RSTART, RLENGTH)
+            if(ennum == "0") {
+                t = t "@{}"
+            }
+            else {
+                emnum = sprintf("%.2fem", ennum*.5)
+                t = t "@{\\hspace{" emnum "}}"
+            }
+            i+= RLENGTH - 1
+        }
+
+        fchar = tolower(substr(s,i,1));
         if( match(fchar,/[lrcsbi_=|]/) ) {
             t = t fchar;
             if(substr(s,i+1,1)!="s" && flag["allbox"]!="") {
@@ -181,7 +196,9 @@ END{
 /\.$/{
     if(intbl && !hasform ){
         gsub(/\ /,"",$0);
-        form = formconv($0)
+#        form = formconv($0)
+        _raw = substr($0, 1, length($0)-1)
+        form = formconv(_raw)
         defaultform = form
         
         if(flag["center"]!="") {

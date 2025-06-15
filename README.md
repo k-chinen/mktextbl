@@ -23,6 +23,7 @@ Here, we show supported feaures.
 - format suffix
     + **b** bold
     + **i** italic
+	+ *num* speparation ('en'-base. convert that to 'em'-base)
 - data
     + **_** single horizontal line
     + **=** double horizontal line
@@ -30,7 +31,7 @@ Here, we show supported feaures.
 ## not supported features
 
 - **_** and **=** in format; latex tabular has same feature
-- **^** in format
+- **^**, **a**, **n** in format
 
 ## LaTeX commands
 
@@ -50,19 +51,5 @@ Do not expect any translation from roff commands to LaTeX commands.
 
 - tbl(1)
 - M.E.Lesk "TBL -- A Program to Format Tables", 1997.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
