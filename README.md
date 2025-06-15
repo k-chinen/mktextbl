@@ -23,7 +23,7 @@ Here, we show supported feaures.
 - format suffix
     + **b** bold
     + **i** italic
-	+ *num* speparation ('en'-base. convert that to 'em'-base)
+    + *num* speparation ('en'-base. convert that to 'em'-base)
 - data
     + **_** single horizontal line
     + **=** double horizontal line
@@ -44,8 +44,8 @@ Do not expect any translation from roff commands to LaTeX commands.
 - In 1992, This program was producuted for integration **tbl** to TeX.
   Because TeX's tabular env. was complex than **tbl**.
 - 2025-06-14:
-	+ Fix right vertical line in "allbox" style.
-	+ Insert newline per line.
+    + Fix right vertical line in "allbox" style.
+    + Insert newline per line.
 
 ## references
 

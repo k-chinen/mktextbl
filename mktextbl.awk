@@ -65,6 +65,14 @@ func formconv(s) {
             }
             i+= RLENGTH - 1
         }
+        else
+        if( match(_left, /^[Ww]\([\.0-9]*.*\)/) ) {
+            _widraw = substr(_left, RSTART, RLENGTH)
+            _wid = substr(_widraw, 3, length(_widraw)-3)
+            t = t "p{" _wid "}"
+            i+= RLENGTH - 1
+            k++;
+        }
 
         fchar = tolower(substr(s,i,1));
         if( match(fchar,/[lrcsbi_=|]/) ) {
