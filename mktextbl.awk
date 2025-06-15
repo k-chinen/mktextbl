@@ -69,9 +69,10 @@ func formconv(s) {
         if( match(_left, /^[Ww]\([\.0-9]*.*\)/) ) {
             _widraw = substr(_left, RSTART, RLENGTH)
             _wid = substr(_widraw, 3, length(_widraw)-3)
+            # XXX remove previrous letter
+            t = substr(t, 1, length(t)-1)
             t = t "p{" _wid "}"
             i+= RLENGTH - 1
-            k++;
         }
 
         fchar = tolower(substr(s,i,1));

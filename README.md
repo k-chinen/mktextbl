@@ -33,11 +33,60 @@ Here, we show supported feaures.
 - **_** and **=** in format; latex tabular has same feature
 - **^**, **a**, **n** in format
 
+## remarkable points
+
+- **w** is convert to 'p' in tabular-env.
+  tbl's **w** is only define width but it is not format.
+  but 'p' in tabular-env is one of format.
+  then, this program ignore previous format of **w**.
+
+  lw(4ex) -> p{4ex}
+
 ## LaTeX commands
 
 This program don't care LaTeX/roff commands.
 You can insert LaTeX's command in document.
 Do not expect any translation from roff commands to LaTeX commands.
+
+
+## example
+
+sample1.tbl
+```
+.TS
+tab(:);
+lcr.
+alpha:beta:gamma
+23:431:432
+.TE
+```
+
+sample1.tex
+```
+\begin{tabular}{lcr}
+alpha & beta & gamma \\
+23 & 431 & 432 \\
+\end{tabular}
+```
+
+sample2.tbl
+```
+.TS
+tab(:);
+llw(8ex).
+ls:list directory contents
+find:walk a file hierarchy
+.TE
+```
+
+sample2.tex
+```
+\begin{tabular}{lp{8ex}}
+ls & list directory contents \\
+find & walk a file hierarchy \\
+\end{tabular}
+```
+
 
 ## history
 
